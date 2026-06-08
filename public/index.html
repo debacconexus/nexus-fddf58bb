@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Environmental Impact Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #07192f;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: #07192f;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #33e0c4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #33e0c4;
+        }
+        
+        .igm-status {
+            background: #ffca58;
+            color: #07192f;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .nav {
+            background: rgba(51, 224, 196, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-item {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid #33e0c4;
+            color: #33e0c4;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #33e0c4;
+            color: #07192f;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #33e0c4;
+            border-radius: 10px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h3 {
+            color: #33e0c4;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(51, 224, 196, 0.1);
+            border-radius: 5px;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffca58;
+        }
+        
+        .alert-high {
+            border-left: 4px solid #ff4757;
+        }
+        
+        .alert-medium {
+            border-left: 4px solid #ffca58;
+        }
+        
+        .alert-low {
+            border-left: 4px solid #33e0c4;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #33e0c4;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #33e0c4;
+            border-radius: 5px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .btn {
+            background: #33e0c4;
+            color: #07192f;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #ffca58;
+            transform: translateY(-2px);
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #33e0c4;
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(51, 224, 196, 0.3);
+        }
+        
+        .data-table th {
+            background: #33e0c4;
+            color: #07192f;
+            font-weight: 600;
+        }
+        
+        .contact-log {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-entry {
+            border-bottom: 1px solid rgba(51, 224, 196, 0.3);
+            padding: 1rem 0;
+        }
+        
+        .contact-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .contact-date {
+            color: #ffca58;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            background: rgba(51, 224, 196, 0.1);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #33e0c4;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .footer a {
+            color: #33e0c4;
+            text-decoration: none;
+        }
+        
+        .impact-map {
+            height: 300px;
+            background: linear-gradient(45deg, #07192f, #33e0c4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+        
+        .california-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .impact-point {
+            background: rgba(255, 199, 88, 0.1);
+            border: 1px solid #ffca58;
+            border-radius: 5px;
+            padding: 1rem;
+        }
+        
+        .impact-point h4 {
+            color: #ffca58;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">AI Environmental Impact Tracker</div>
+        <div class="igm-status">IGM Status: Active</div>
+    </header>
+    
+    <nav class="nav">
+        <button class="nav-item active" onclick="showSection('dashboard')">Dashboard</button>
+        <button class="nav-item" onclick="showSection('intake')">Data Intake</button>
+        <button class="nav-item" onclick="showSection('contacts')">Contact Log</button>
+        <button class="nav-item" onclick="showSection('search')">Search & Reports</button>
+    </nav>
+    
+    <div class="container">
+        <section id="dashboard" class="section active">
+            <h2 style="margin-bottom: 2rem; color: #33e0c4;">Real-Time AI Environmental Impact Dashboard</h2>
+            
+            <div class="dashboard">
+                <div class="card">
+                    <h3>Current AI Power Consumption</h3>
+                    <div class="metric alert-high">
+                        <span>Global AI Energy Use</span>
+                        <span class="metric-value">847.2 TWh</span>
+                    </div>
+                    <div class="metric alert-high">
+                        <span>California Data Centers</span>
+                        <span class="metric-value">156.8 TWh</span>
+                    </div>
+                    <div class="metric alert-medium">
+                        <span>Carbon Footprint</span>
+                        <span class="metric-value">3.2M tons CO2</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Environmental Impact Metrics</h3>
+                    <div class="metric alert-high">
+                        <span>Water Usage</span>
+                        <span class="metric-value">2.3B gallons</span>
+                    </div>
+                    <div class="metric alert-medium">
+                        <span>Land Use Impact</span>
+                        <span class="metric-value">15,670 acres</span>
+                    </div>
+                    <div class="metric alert-high">
+                        <span>Heat Generation</span>
+                        <span class="metric-value">892°F avg</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>California Impact Points</h3>
+                    <div class="metric alert-high">
+                        <span>Silicon Valley Centers</span>
+                        <span class="metric-value">23 facilities</span>
+                    </div>
+                    <div class="metric alert-high">
+                        <span>Los Angeles Region</span>
+                        <span class="metric-value">18 facilities</span>
+                    </div>
+                    <div class="metric alert-medium">
+                        <span>San Francisco Bay</span>
+                        <span class="metric-value">31 facilities</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>California AI Data Center Impact Map</h3>
+                <div class="impact-map">
+                    Interactive California Impact Visualization
+                </div>
+                
+                <div class="california-points">
+                    <div class="impact-point">
+                        <h4>Santa Clara Valley</h4>
+                        <p>Power: 45.2 TWh | Water: 890M gallons | Heat Impact: High</p>
+                    </div>
+                    <div class="impact-point">
+                        <h4>San Francisco Peninsula</h4>
+                        <p>Power: 32.8 TWh | Water: 625M gallons | Heat Impact: High</p>
+                    </div>
+                    <div class="impact-point">
+                        <h4>Los Angeles Basin</h4>
+                        <p>Power: 28.1 TWh | Water: 534M gallons | Heat Impact: Medium</p>
+                    </div>
+                    <div class="impact-point">
+                        <h4>Sacramento Valley</h4>
+                        <p>Power: 22.3 TWh | Water: 445M gallons | Heat Impact: Medium</p>
+                    </div>
+                    <div class="impact-point">
+                        <h4>Central Valley</h4>
+                        <p>Power: 18.7 TWh | Water: 356M gallons | Heat Impact: Low</p>
+                    </div>
+                    <div class="impact-point">
+                        <h4>San Diego Region</h4>
+                        <p>Power: 15.2 TWh | Water: 298M gallons | Heat Impact: Low</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="intake" class="section">
+            <h2 style="margin-bottom: 2rem; color: #33e0c4;">Environmental Impact Data Intake Form</h2>
+            
+            <div class="card">
+                <form id="impactForm">
+                    <div class="form-group">
+                        <label for="datacenterName">Data Center Name</label>
+                        <input type="text" id="datacenterName" name="datacenterName" placeholder="Enter data center facility name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">California Location</label>
+                        <select id="location" name="location" required>
+                            <option value="">Select Location</option>
+                            <option value="santa-clara">Santa Clara Valley</option>
+                            <option value="san-francisco">San Francisco Peninsula</option>
+                            <option value="los-angeles">Los Angeles Basin</option>
+                            <option value="sacramento">Sacramento Valley</option>
+                            <option value="central-valley">Central Valley</option>
+                            <option value="san-diego">San Diego Region</option>
+                            <option value="other">Other California Location</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="powerConsumption">Power Consumption (TWh)</label>
+                        <input type="number" id="powerConsumption" name="powerConsumption" step="0.1" placeholder="Enter power consumption in terawatt hours" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="waterUsage">Water Usage (Million Gallons)</label>
+                        <input type="number" id="waterUsage" name="waterUsage" step="0.1" placeholder="Enter water usage for cooling systems" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="carbonFootprint">Carbon Footprint (Tons CO2)</label>
+                        <input type="number" id="carbonFootprint" name="carbonFootprint" step="0.1" placeholder="Enter estimated carbon emissions" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="impactLevel">Environmental Impact Level</label>
+                        <select id="impactLevel" name="impactLevel" required>
+                            <option value="">Select Impact Level</option>
+                            <option value="low">Low Impact</option>
+                            <option value="medium">Medium Impact</option>
+                            <option value="high">High Impact</option>
+                            <option value="critical">Critical Impact</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" name="notes" rows="4" placeholder="Enter additional environmental impact observations or concerns"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn">Submit Impact Data</button>
+                </form>
+            </div>
+        </section>
+        
+        <section id="contacts" class="section">
+            <h2 style="margin-bottom: 2rem; color: #33e0c4;">Environmental Contact Log</h2>
+            
+            <div class="card">
+                <h3>Recent Environmental Impact Communications</h3>
+                
+                <div class="contact-log">
+                    <div class="contact-entry">
+                        <div class="contact-date">2024-01-15 - 09:30 AM</div>
+                        <h4>California Energy Commission</h4>
+                        <p><strong>Contact:</strong> Dr. Sarah Martinez, Environmental Impact Director</p>
+                        <p><strong>Topic:</strong> AI data center power consumption review for Q4 2023</p>
+                        <p><strong>Action Items:</strong> Submit quarterly energy usage reports, schedule site inspection for Santa Clara facilities</p>
+                    </div>
+                    
+                    <div class="contact-entry">
+                        <div class="contact-date">2024-01-12 - 02:15 PM</div>
+                        <h4>Bay Area Air Quality Management District</h4>
+                        <p><strong>Contact:</strong> Michael Chen, Senior Environmental Scientist</p>
+                        <p><strong>Topic:</strong> Heat island effect assessment from data center operations</p>
+                        <p><strong>Action Items:</strong> Implement advanced cooling technologies, reduce thermal emissions by 15%</p>
+                    </div>
+                    
+                    <div class="contact-entry">
+                        <div class="contact-date">2024-01-10 - 11:45 AM</div>
+                        <h4>Pacific Gas & Electric</h4>
+                        <p><strong>Contact:</strong> Jennifer Lopez, Sustainability Manager</p>
+                        <p><strong>Topic:</strong> Renewable energy integration for AI infrastructure</p>
+                        <p><strong>Action Items:</strong> Transition 60% of operations to solar power by Q3 2024</p>
+                    </div>
+                    
+                    <div class="contact-entry">
+                        <div class="contact-date">2024-01-08 - 04:20 PM</div>
+                        <h4>California Water Resources Control Board</h4>
+                        <p><strong>Contact:</strong> Robert Kim, Water Conservation Specialist</p>
+                        <p><strong>Topic:</strong> Data center water usage optimization strategies</p>
+                        <p><strong>Action Items:</strong> Install water recycling systems, reduce consumption by 25%</p>
+                    </div>
+                    
+                    <div class="contact-entry">
+                        <div class="contact-date">2024-01-05 - 08:00 AM</div>
+                        <h4>Silicon Valley Clean Energy</h4>
+                        <p><strong>Contact:</strong> Lisa Wang, Environmental Programs Manager</p>
